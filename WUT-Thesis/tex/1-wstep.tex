@@ -1,50 +1,4 @@
 \newpage % Rozdziały zaczynamy od nowej strony.
-\section*{Cel Pracy} \label{ss:Cel Pracy}
-
-\noindent
-Dynamiczny rozwój technologii oraz systemów sztucznej inteligencji umożliwił
-realizację zaawansowanych i skomplikowanych obliczeniowo zadań bezpośrednio na urządzeniach mobilnych.
-Postęp w architekturze modeli, metodach kompresji oraz wydajności układów (CPU/NPU) sprawił,
-że aplikacje korzystające z AI stały się powszechne w środowisku mobilnym.
-Równolegle wielcy dostawcy usług chmurowych udostępniają najnowocześniejsze modele AI
-oferujące zaawansowane możliwości o niespotykanej wcześniej jakości i skali.
-Rozwiązania te niosą jednak ze sobą zależność od zewnętrznej infrastruktury oraz wiążą się
-z kwestiami prywatności, bezpieczeństwa i opłat subskrypcyjnych.
-
-Na tym tle szczególne znaczenie zyskuje kwestia automatycznego generowania opisów obrazów 
-(image captioning), łączącej zaawansowane przetwarzanie obrazu z generowaniem języka naturalnego.
-Technologia ta znajduje zastosowanie w wielu aspektach, od wsparcia osób z dysfunkcją wzroku,
-przez automatyczną kategoryzację treści, aż po integrację z asystentami głosowymi.
-
-
-W obliczu tych możliwości twórcy aplikacji mobilnych stają przed dylematem wyboru
-między wdrażaniem lokalnych modeli sztucznej inteligencji a integracją z usługami chmurowych dostawców.
-
-Celem niniejszej pracy jest przeprowadzenie kompleksowej analizy porównawczej modeli działających 
-w warunkach lokalnych oraz chmurowych w kontekście generowania opisów obrazów na urządzeniach 
-z systemem Android. Badanie obejmuje porównanie trzech modeli lokalnych uruchamianych przez środowisko
-ONNX Runtime (Florence-2, ViT-GPT2, BLIP) oraz trzech usług chmurowych udostępnianych przez interfejs
-API (OpenAI GPT-4o mini, Azure Computer Vision, Google Gemini 2.5 Flash Lite).
-
-Analiza efektywności poszczególnych modeli opiera się na dwóch komplementarnych aspektach:
-metrykach wydajnościowych (czas generowania odpowiedzi, zużycie pamięci RAM, pobór energii, koszty wywołań API)
-oraz metrykach jakościowych (poprawność generowanych opisów mierzona wskaźnikami CIDEr, SPICE, METEOR, BLEU).
-Zebrane w ten sposób dane posłużą do sformułowania popartych empirycznie rekomendacji doboru rozwiązań
-sztucznej inteligencji w zależności od przeznaczenia projektowanej aplikacji mobilnej.
-
-Do realizacji powyższych celów zaprojektowano i zaimplementowano platformę badawczą CaptionLab, która
-umożliwia prowadzenie badań, zbieranie metryk oraz zautomatyzowane testy na dużych zbiorach danych.
-Architektura platformy badawczej została opracowana z myślą o elastyczności i rozszerzalności
-dzięki jednolitemu podejściu do implementacji poszczególnych modeli w formie osobnych providerów.
-
-Ostatecznie praca dostarcza nie tylko analityczną wiedzę odnośnie strategii wdrażania systemów 
-sztucznej inteligencji w środowisku mobilnym, ale także funkcjonalną platformę badawczą, która
-może służyć jako fundament dla dalszych badań lub jako funkcjonalne narzędzie przy podejmowaniu
-decyzji architektonicznych w projektowaniu aplikacji mobilnych.
-
-
-
-\newpage
 \section{Wstęp}\label{s:Wstep}
 
 \noindent
@@ -57,12 +11,12 @@ do prawie 3.7 bilionów USD do roku 2034 \cite{ai_market_precedence_2025}.
 
 W spektrum zastosowań sztucznej inteligencji szczególnie wyróżnia się zadanie automatycznego generowania
 opisów obrazów (image captioning) jako jedno z bardziej złożonych wyzwań łączących przetwarzanie obrazu,
-kategoryzację wizualną oraz analizę kontekstu z generowaniem języka naturalnego. Systemy image captioning,
+kategoryzację wizualną oraz analizę kontekstu z generowaniem języka naturalnego. Systemy image captioning'u,
 oparte na architekturach encoder-decoder \cite{show_and_tell_vinyals2015}, znajdują zastosowanie w wielu obszarach,
 od wsparcia osób z dysfunkcją wzroku, przez automatyczną kategoryzację treści, aż po integrację
 z asystentami głosowymi.
 
-Rozwój technologii uczenia maszynowego umożliwił znaczący postęp w dziedzinie image captioning.
+Rozwój technologii uczenia maszynowego umożliwił znaczący postęp w dziedzinie image captioning'u.
 Systemy AI zyskały nowe możliwości dzięki innowacyjnym architekturom modeli oraz narzędziom
 ułatwiającym deweloperom wdrażanie zaawansowanych rozwiązań.
 Modele oparte na architekturze transformerów wizyjnych (Vision Transformer, ViT)
@@ -99,14 +53,29 @@ kosztem zależności od sieci, kosztów subskrypcyjnych i zewnętrznego przetwar
 oraz przepustowość systemu \cite{edge_vs_cloud_mao2017}. W przypadku środowiska o ograniczonych zasobach, 
 chcąc jednocześnie oferować możliwie jak najlepszą jakość usługi, wybór odpowiedniego rozwiązania staje się kluczowym zadaniem projektowym dla twórców aplikacji mobilnych.
 
-
 Brak kompleksowych badań porównawczych utrudnia jednak podejmowanie świadomych decyzji architektonicznych.
-Niniejsza praca ma na celu wypełnienie tej luki poprzez przeprowadzenie szczegółowej analizy wydajnościowej
-i jakościowej reprezentatywnych modeli lokalnych i chmurowych do generowania opisów obrazów w środowisku
-mobilnym Android.
+Niniejsza praca ma na celu wypełnienie tej luki poprzez przeprowadzenie kompleksowej analizy porównawczej modeli działających 
+w warunkach lokalnych oraz chmurowych w kontekście generowania opisów obrazów na urządzeniach 
+z systemem Android. Badania obejmują porównanie trzech modeli lokalnych uruchamianych przez środowisko
+ONNX Runtime (Florence-2, ViT-GPT2, BLIP) oraz trzech usług chmurowych udostępnianych przez interfejs
+API (OpenAI GPT-4o mini, Azure Computer Vision, Google Gemini 2.5 Flash Lite).
+
+Analiza efektywności poszczególnych modeli opiera się na dwóch komplementarnych aspektach:
+metrykach wydajnościowych (czas generowania odpowiedzi, zużycie pamięci RAM, pobór energii, koszty wywołań API)
+oraz metrykach jakościowych (poprawność generowanych opisów mierzona wskaźnikami CIDEr, SPICE, METEOR, BLEU).
+Zebrane w ten sposób dane posłużą do sformułowania popartych empirycznie rekomendacji doboru rozwiązań
+sztucznej inteligencji w zależności od przeznaczenia projektowanej aplikacji mobilnej.
+
+Do realizacji powyższych celów zaprojektowano i zaimplementowano dedykowaną platformę badawczą CaptionLab, która
+umożliwia prowadzenie badań, zbieranie metryk oraz zautomatyzowane testy na dużych zbiorach danych.
+
+Ostatecznie praca dostarcza nie tylko analityczną wiedzę odnośnie strategii wdrażania systemów 
+sztucznej inteligencji w środowisku mobilnym, ale także funkcjonalną platformę badawczą, która
+może służyć jako fundament dla dalszych badań lub jako funkcjonalne narzędzie przy podejmowaniu
+decyzji architektonicznych w projektowaniu aplikacji mobilnych.
 
 
-\subsection{Wymagania projektowe}\label{ss:Wymagania Projektowe}
+\subsection{Opis badań}\label{ss:Wymagania Projektowe}
 
 \noindent
 Głównym celem badawczym niniejszej pracy było przeprowadzenie kompleksowej analizy efektywności 
@@ -199,6 +168,7 @@ czy chmurowe) jest bardziej efektywne w środowisku mobilnym oraz jakie kryteria
 Analogicznie do dekompozycji celu głównego na cele szczegółowe problem główny został rozłożony na pięć 
 problemów szczegółowych bezpośrednio odpowiadających celom szczegółowym C1-C5.
 
+\vspace{0.3cm}
 \begin{enumerate}[leftmargin=*, label=\textbf{P\arabic*.}, itemsep=3pt]
     \item Jak działa zadanie automatycznego generowania opisów obrazów,
     czym charakteryzują się poszczególne architektury modeli AI
@@ -273,7 +243,7 @@ prowadzi do wyznaczenia praktycznych rekomendacji dotyczących doboru strategii 
 w zadaniu image captioning'u w środowisku aplikacji mobilnych.
 
 
-\subsection{Metodologia badawcza}\label{ss:Metodologia badawcza}
+\subsection{Projekt badań i porównań}\label{ss:Metodologia badawcza}
 
 \noindent
 W celu zrealizowania postawionych celów badawczych oraz weryfikacji sformułowanych hipotez, 
@@ -312,11 +282,11 @@ poprzez porównanie przewidywanych wartości z rzeczywistymi pomiarami, a także
 konkretnych, mierzalnych rekomendacji dotyczących wyboru strategii wdrożeniowej w zależności 
 od przeznaczenia aplikacji.
 
-\clearpage
+
 \subsection{Struktura Pracy}\label{ss:Struktura Pracy}
 
 \noindent
-Wskazane cele, problemy i hipotezy badawcze w sekcji \ref{ss:Wymagania Projektowe}. \textquote{Wymagania projektowe}
+Wskazane cele, problemy i hipotezy badawcze w sekcji \ref{ss:Wymagania Projektowe}. \textquote{Opis badań}
 zdefiniowały podział pracy na poszczególne jednostki redakcyjne, 
 z których każda odpowiada realizacji kolejnych celów badawczych oraz weryfikacji postawionych hipotez.
 
@@ -337,6 +307,6 @@ metryk jakościowych oceniających generowane opisy obrazów, na podstawie popul
 Wszelkie dane zebrane podczas przeprowadzania badań zostały przedstawione w rozdziale \ref{s:Wyniki badan}. \textit{Wyniki badań},
 aby na ich podstawie dokonać analizy i wysnuć odpowiednią interpretację na łamach rozdziału \ref{s:Interpretacja wynikow badan}. \textit{Interpretacja wyników badań}.
 
-Rozdział \ref{s:Podsumowanie}. \textit{Podsumowanie} zawiera końcowe wnioski z przeprowadzonych badań oraz wskazuje kierunki dalszych badań w obszarze wdrażania systemów
+Rozdział \ref{s:Podsumowanie}. \textit{Podsumowanie i wnioski} zawiera końcowe wnioski z przeprowadzonych badań oraz wskazuje kierunki dalszych badań w obszarze wdrażania systemów
 image captioning'u  opartych o AI na platformach mobilnych.
 
